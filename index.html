@@ -4,34 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mamat</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body>
-    <header>
-        <img src="avatar.svg" alt="foto profile saya">
-        <h1>Ahmad Ma'ruf</h1>
-        <p>Mas-mas biasa</p>
-    </header>
+<body class="min-h-screen bg-slate-100 text-slate-700">
+    <div class="mx-auto max-w-md px-4 py-10">
+        <header class="flex flex-col items-center text-center">
+            <img src="avatar.svg" alt="foto profile saya" class="h-24 w-24 rounded-full shadow ring-4 ring-white">
+            <h1 class="mt-4 text-2xl font-bold">Ahmad Ma'ruf</h1>
+            <p class="mt-1 text-slate-500 text-sm">Mas-mas biasa</p>
+        </header>
 
-    <nav aria-label="Media Sosial">
-        <ul>
-            <li><a href="https://github.com/ahmaruff" aria-label="Github">Github</a></li>
-            <li><a href="https://linkedin.com/in/ahmaruff" aria-label="Linkedin">Linkedin</a></li>
-            <li><a href="https://ahmaruff.github.io/blog" aria-label="Blog">Blog</a></li>
-        </ul>
-    </nav>
+        <nav aria-label="Media Sosial">
+            <ul class="flex justify-center gap-3 flex-row">
+                <li><a href="https://github.com/ahmaruff" aria-label="Github"
+                    class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl shadow-sm ring-1 ring-slate-200 hover:bg-amber-300 hover:w-12 hover:h-12"
+                    >💪</a></li>
+                <li><a href="https://linkedin.com/in/ahmaruff" aria-label="Linkedin"
+                    class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl shadow-sm ring-1 ring-slate-200 hover:bg-amber-300 hover:w-12 hover:h-12"
+                    ">🫂</a></li>
+                <li><a href="https://ahmaruff.github.io/blog" aria-label="Blog"
+                    class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl shadow-sm ring-1 ring-slate-200 hover:bg-amber-300 hover:w-12 hover:h-12"
+                    >📰</a></li>
+            </ul>
+        </nav>
 
-    <main>
-        <h2>Link Saya</h2>
-        <ul>
-            <li><a href="https://example.com/portfolio">Portofolio</a></li>
-            <li><a href="https://github.com/ahmaruff/mypage">Link Page Ini</a></li>
-            <li><a href="https://example.com/catatan">Catatan Kursus</a></li>
-            <li><a href="mailto:halo@example.com">Email</a></li>
-        </ul>
-    </main>
+        <main>
+            <h2 class="mt-8 text-sm font-semibold uppercase tracking-wide text-slate-500">Link Saya</h2>
+            <ul class="mt-3 space-y-3">
+                <li>
+                    <a href="https://example.com/portfolio"
+                        class="flex items-center justify-center gap-3 rounded-xl bg-white px-5 py-4 font-medium shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Portofolio
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/ahmaruff/mypage"
+                        class="flex items-center justify-center gap-3 rounded-xl bg-white px-5 py-4 font-medium shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Link Page Ini
+                    </a>
+                </li>
+                <li>
+                    <a href="https://example.com/catatan"
+                        class="flex items-center justify-center gap-3 rounded-xl bg-white px-5 py-4 font-medium shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Catatan Kursus
+                    </a>
+                </li>
+                <li>
+                    <a href="mailto:halo@example.com"
+                        class="flex items-center justify-center gap-3 rounded-xl bg-white px-5 py-4 font-medium shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Email
+                    </a>
+                </li>
+            </ul>
+        </main>
 
-        <footer>
-        <p>&copy; 2026 Nama Kamu</p>
-    </footer>
+        <footer class="mt-10 text-center text-xs text-slate-400">
+            <p>&copy; 2026 Nama Kamu</p>
+        </footer>
+    </div>
 </body>
 </html>
