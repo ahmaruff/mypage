@@ -5,8 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mamat</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        @custom-variant dark (&:where(.dark, .dark *));
+    </style>
+
+    <script>
+        // Dijalankan SEBELUM halaman tampil, supaya tidak "berkedip" terang dulu.
+        try {
+            const savedTheme = localStorage.getItem("linkpage:theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            // Pakai pilihan tersimpan; kalau belum ada, ikuti pengaturan sistem
+            if (savedTheme === "dark" || (savedTheme === null && prefersDark)) {
+                document.documentElement.classList.add("dark");
+            }
+        } catch (error) {
+            // localStorage bisa diblokir di beberapa browser; abaikan saja
+        }
+    </script>
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-700 dark:bg-slate-950 dark:text-slate-100">
+
+    <button id="theme-toggle" type="button" aria-label="Ganti ke mode gelap"
+        class="fixed right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl shadow-sm ring-1 ring-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:ring-slate-800 dark:focus-visible:outline-indigo-400">
+        🌙
+    </button>
+
     <div class="mx-auto max-w-md px-4 py-10 md:max-w-xl md:py-16 lg:grid lg:max-w-5xl lg:grid-cols-2 lg:items-start lg:gap-16">
         <div>
             <header class="flex flex-col items-center text-center">
@@ -32,6 +57,18 @@
 
         <main>
             <h2 class="mt-8 text-sm font-semibold uppercase tracking-wide text-slate-500 lg:mt-0 dark:text-slate-400">Link Saya</h2>
+            
+            <div id="filter-tabs" class="mt-3 flex flex-wrap gap-2">
+                <button type="button" data-category="semua" aria-pressed="true"
+                        class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 aria-pressed:bg-indigo-600 aria-pressed:text-white aria-pressed:ring-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800 dark:focus-visible:outline-indigo-400">Semua</button>
+                <button type="button" data-category="sosmed" aria-pressed="false"
+                        class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 aria-pressed:bg-indigo-600 aria-pressed:text-white aria-pressed:ring-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800 dark:focus-visible:outline-indigo-400">Sosmed</button>
+                <button type="button" data-category="project" aria-pressed="false"
+                        class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 aria-pressed:bg-indigo-600 aria-pressed:text-white aria-pressed:ring-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800 dark:focus-visible:outline-indigo-400">Project</button>
+                <button type="button" data-category="kontak" aria-pressed="false"
+                        class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 aria-pressed:bg-indigo-600 aria-pressed:text-white aria-pressed:ring-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800 dark:focus-visible:outline-indigo-400">Kontak</button>
+            </div>
+
             <ul class="mt-3 space-y-3" id="link-list">
                 
             </ul>
