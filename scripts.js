@@ -69,8 +69,13 @@ function handleFilterClick(clickedButton) {
     }
   });
 
+  currentCategory = clickedButton.dataset.category;
+
+
   // 2. Tampilkan ulang link sesuai kategori tombol
   renderLinks(clickedButton.dataset.category);
+  updateCount(); // "menampilkan xxx link"
+  updateEmptyState();
 }
 
 tabButtons.forEach(function (button) {
@@ -106,7 +111,90 @@ themeToggle.addEventListener("click", function () {
   updateThemeButton();
 });
 
+// INI STATE CATEGORY
+let currentCategory = "semua";
+
+// ambil elemen counter & empty state
+const linkCount = document.querySelector("#link-count")
+const emptyState = document.querySelector("#empty-state")
+
+
+// fungsi untuk menampilkan text jml/counter link
+function updateCount() {
+    const total = linkList.children.length;
+    linkCount.textContent = "Menampilkan " + total + " link";
+}
+
+// fungsi update empty state
+function updateEmptyState() {
+  if(linkList.children.length === 0) {
+      emptyState.classList.remove("hidden"); // memunculkan empty state
+  } else {
+    emptyState.classList.add("hidden"); // menyembunyikan empty state
+  }
+}
+
+// form tambah link
+const addLinkForm = document.querySelector("#add-link-form") // ini elemen form
+const formError = document.querySelector("#form-error") // ini elemen <p> untuk menampilkan pesan error
+
+function showFormError(message) {
+  formError.textContent = message;
+  formError.classList.remove("hidden");
+}
+
+function hideFormError() {
+  formError.textContent = "";
+  formError.classList.add("hidden");
+}
+
+// validasi data url
+function isValidUrl(url) {
+  return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("mailto:");
+}
+
+addLinkForm.addEventListener("submit", function(event) {
+  event.preventDefault(); // ini dipanggil supaya halaman tidak refresh
+
+  const title = document.querySelector("#link-title").value.trim();
+  const url = document.querySelector("#link-url").value.trim();
+  const category = document.querySelector("#link-category").value;
+
+  if(title == "") {
+    showFormError("Judul tidak boleh kosong");
+    return;
+  }
+
+  if(!isValidUrl(url)) {
+    showFormError("URL harus diawali dengan http:// atau https:// atau mailto:")
+    return;
+  }
+
+  hideFormError();
+
+  // kalo di real world, simpannya ke database.
+  links.push({
+    id : Date.now(),
+    title: title,
+    url: url,
+    category: category,
+    icon: "🎶" // untuk nampilin emoji =  Windows + . (titik)
+  })
+
+
+  // reset/kosongkan form input link
+  addLinkForm.reset();
+
+  // render UI
+  renderLinks(links)
+  updateCount();
+  emptyState();
+  updateThemeButton();
+});
+
 // ===== MULAI =====
 renderLinks("semua");
+updateCount();
+emptyState();
 updateThemeButton();
 

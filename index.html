@@ -69,9 +69,56 @@
                         class="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 aria-pressed:bg-indigo-600 aria-pressed:text-white aria-pressed:ring-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800 dark:focus-visible:outline-indigo-400">Kontak</button>
             </div>
 
+            <!-- ini nanti ditaruh pesan counter -->
+            <p id="link-count" aria-live="polite" class="mt-4 text-sm text-slate-500 dark:text-slate-400"></p>
+
             <ul class="mt-3 space-y-3" id="link-list">
                 
             </ul>
+
+            <!-- bagian ini nanti muncul kalau ngga ada list yang sesuai -->
+            <p id="empty-state"
+                class="mt-3 hidden rounded-xl bg-white px-5 py-4 text-center text-sm text-slate-500 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:ring-slate-800">
+                Belum ada link di kategori ini.
+            </p>
+
+
+            <!-- tambah link baru -->
+            <section class="mt-10" aria-labelledby="add-link-heading">
+                <h2 id="add-link-heading" class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Tambah Link
+                </h2>
+
+                <form id="add-link-form" novalidate
+                    class="mt-3 space-y-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+                    <div>
+                        <label for="link-title" class="block text-sm font-medium">Judul</label>
+                        <input id="link-title" type="text"
+                            class="mt-1 w-full rounded-lg bg-white px-3 py-2 text-sm ring-1 ring-slate-300 focus-visible:outline-2 focus-visible:outline-indigo-600 dark:bg-slate-950 dark:ring-slate-700 dark:focus-visible:outline-indigo-400">
+                    </div>
+                    <div>
+                        <label for="link-url" class="block text-sm font-medium">URL</label>
+                        <input id="link-url" type="text" placeholder="https://..."
+                            class="mt-1 w-full rounded-lg bg-white px-3 py-2 text-sm ring-1 ring-slate-300 focus-visible:outline-2 focus-visible:outline-indigo-600 dark:bg-slate-950 dark:ring-slate-700 dark:focus-visible:outline-indigo-400">
+                    </div>
+                    <div>
+                        <label for="link-category" class="block text-sm font-medium">Kategori</label>
+                        <select id="link-category"
+                            class="mt-1 w-full rounded-lg bg-white px-3 py-2 text-sm ring-1 ring-slate-300 focus-visible:outline-2 focus-visible:outline-indigo-600 dark:bg-slate-950 dark:ring-slate-700 dark:focus-visible:outline-indigo-400">
+                            <option value="sosmed">Sosmed</option>
+                            <option value="project">Project</option>
+                            <option value="kontak">Kontak</option>
+                        </select>
+                    </div>
+
+                    <p id="form-error" role="alert" class="hidden text-sm text-rose-600 dark:text-rose-400"></p>
+
+                    <button type="submit"
+                        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-400">
+                        Tambah
+                    </button>
+                </form>
+            </section>
         </main>
 
         <footer class="mt-10 text-center text-xs text-slate-400 lg:col-span-2 dark:text-slate-500">
