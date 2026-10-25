@@ -1,142 +1,189 @@
-// ===== DATA =====
-// Setiap link adalah object. Semua link disimpan dalam satu array.
-const links = [
-  { id: 1, title: "GitHub", url: "https://github.com/username", category: "sosmed", icon: "🐙" },
-  { id: 2, title: "Instagram", url: "https://instagram.com/username", category: "sosmed", icon: "📸" },
-  { id: 3, title: "LinkedIn", url: "https://linkedin.com/in/username", category: "sosmed", icon: "💼" },
-  { id: 4, title: "Portofolio", url: "https://example.com/portfolio", category: "project", icon: "🎨" },
-  { id: 5, title: "Link Page Ini (Repo)", url: "https://github.com/username/link-page", category: "project", icon: "🧩" },
-  { id: 6, title: "Catatan Kursus", url: "https://example.com/catatan", category: "project", icon: "📓" },
-  { id: 7, title: "Email", url: "mailto:halo@example.com", category: "kontak", icon: "✉️" },
-  { id: 8, title: "WhatsApp", url: "https://wa.me/6281234567890", category: "kontak", icon: "💬" }
+// ===== STYLE =====
+const CARD_CLASSES = "flex items-center justify-center gap-3 rounded-xl bg-white px-5 py-4 font-medium shadow-sm ring-1 ring-slate-200 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:ring-slate-800 dark:hover:bg-slate-100 dark:hover:text-slate-900 dark:focus-visible:outline-indigo-400 motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+
+const TAB_CLASSES = "rounded-full bg-white px-4 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 aria-pressed:bg-indigo-600 aria-pressed:text-white aria-pressed:ring-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800 dark:focus-visible:outline-indigo-400";
+
+const MESSAGE_CLASSES = "rounded-xl bg-white px-5 py-4 text-center text-sm text-slate-500 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:ring-slate-800";
+
+// ===== DATA SEMENTARA =====
+const initialLinks = [
+    { id: 1, title: "GitHub", url: "https://github.com/username", category: "sosmed", icon: "🐙" },
+    { id: 2, title: "Instagram", url: "https://instagram.com/username", category: "sosmed", icon: "📸" },
+    { id: 3, title: "LinkedIn", url: "https://linkedin.com/in/username", category: "sosmed", icon: "💼" },
+    { id: 4, title: "Portofolio", url: "https://example.com/portfolio", category: "project", icon: "🎨" },
+    { id: 5, title: "Link Page Ini (Repo)", url: "https://github.com/username/link-page", category: "project", icon: "🧩" },
+    { id: 6, title: "Catatan Kursus", url: "https://example.com/catatan", category: "project", icon: "📓" },
+    { id: 7, title: "Email", url: "mailto:halo@example.com", category: "kontak", icon: "✉️" },
+    { id: 8, title: "WhatsApp", url: "https://wa.me/6281234567890", category: "kontak", icon: "💬" }
 ];
 
-// ===== STYLE =====
-// Class Tailwind untuk kartu link (sama dengan versi HTML di Pertemuan 2)
-const CARD_CLASSES =
-  "flex items-center justify-center gap-3 rounded-xl bg-white px-5 py-4 font-medium shadow-sm ring-1 ring-slate-200 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-slate-900 dark:ring-slate-800 dark:hover:bg-slate-100 dark:hover:text-slate-900 dark:focus-visible:outline-indigo-400 motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+// ===== STATE =====
+const state = {
+    links: initialLinks,
+    activeCategory: "semua",
+    theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
+    status: "ready"
+};
 
-// ===== RENDER =====
-function createLinkItem(link) {
-  const item = document.createElement("li");
-  const anchor = document.createElement("a");
-
-  anchor.href = link.url;
-  anchor.className = CARD_CLASSES;
-
-  // Link ke website lain dibuka di tab baru. mailto: tidak perlu.
-  if (link.url.startsWith("http")) {
-    anchor.target = "_blank";
-    anchor.rel = "noopener noreferrer";
-  }
-
-  const icon = document.createElement("span");
-  icon.setAttribute("aria-hidden", "true");
-  icon.textContent = link.icon;
-
-  anchor.appendChild(icon);
-  anchor.appendChild(document.createTextNode(" " + link.title));
-  item.appendChild(anchor);
-
-  return item;
+// Satu-satunya pintu untuk mengubah data
+function setState(changes) {
+    Object.assign(state, changes);
+    render();
 }
 
-const linkList = document.querySelector("#link-list");
 
-function renderLinks(category) {
-  // 1. Kosongkan daftar lama
-  linkList.innerHTML = "";
+// HELPERs
+// Mengubah karakter spesial HTML menjadi teks biasa, supaya input pengguna
+// (misalnya "<script>") tidak dijalankan sebagai kode. Ini mencegah serangan XSS.
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
 
-  // 2. Tambahkan link yang cocok dengan kategori
-  links.forEach(function (link) {
-    if (category === "semua" || link.category === category) {
-      linkList.appendChild(createLinkItem(link));
+// ===== KOMPONEN =====
+// Komponen = function yang menerima data dan mengembalikan string HTML
+function LinkCard(link) {
+    let extraAttributes = "";
+    if(link.url.startsWith("http")) {
+        extraAttributes = ' target="_blank" rel="noopener noreferrer"';
     }
-  });
+
+    // cleaning data
+    const url = escapeHtml(link.url)
+    const title = escapeHtml(link.title)
+    const icon = escapeHtml(link.icon);
+
+    // ini diawal pakai backtick ygy. `  bukan ' atau "
+    return `
+        <li>
+            <a href="${url}" ${extraAttributes} class="${CARD_CLASSES}">
+                <span aria-hidden="true">${icon}</span>
+                ${title}
+            </a>
+        </li>
+    `;
 }
 
-// ===== FILTER =====
-const filterTabs = document.querySelector("#filter-tabs");
-const tabButtons = filterTabs.querySelectorAll("button");
-
-function handleFilterClick(clickedButton) {
-  // 1. Hanya tombol yang diklik yang ditandai aktif
-  tabButtons.forEach(function (button) {
-    if (button === clickedButton) {
-      button.setAttribute("aria-pressed", "true");
-    } else {
-      button.setAttribute("aria-pressed", "false");
+function getVisibleLinks(state) {
+    if(state.activeCategory === "semua") {
+        return state.links;
     }
-  });
 
-  currentCategory = clickedButton.dataset.category;
-
-
-  // 2. Tampilkan ulang link sesuai kategori tombol
-  renderLinks(clickedButton.dataset.category);
-  updateCount(); // "menampilkan xxx link"
-  updateEmptyState();
+    return state.links.filter(function (link) {
+        return link.category === state.activeCategory;
+    });
 }
 
-tabButtons.forEach(function (button) {
-  button.addEventListener("click", function () {
-    handleFilterClick(button);
-  });
-});
+ // komponen render LinkCard berdasarkan state
+function LinkList(state) {
+    const visibleLinks = getVisibleLinks(state);
 
-// ===== TEMA =====
-const themeToggle = document.querySelector("#theme-toggle");
+    if(visibleLinks.length == 0) {
+        return EmptyState();
+    }
 
-// Menyesuaikan ikon dan label tombol dengan tema yang sedang aktif
-function updateThemeButton() {
-  const isDark = document.documentElement.classList.contains("dark");
-
-  if (isDark) {
-    themeToggle.textContent = "☀️";
-    themeToggle.setAttribute("aria-label", "Ganti ke mode terang");
-  } else {
-    themeToggle.textContent = "🌙";
-    themeToggle.setAttribute("aria-label", "Ganti ke mode gelap");
-  }
+    return visibleLinks.map(function (link) {
+        return LinkCard(link)
+    }).join("");
 }
 
-themeToggle.addEventListener("click", function () {
-  // toggle() menambah class jika belum ada, menghapus jika sudah ada.
-  // Hasilnya true kalau class "dark" sekarang terpasang.
-  const isDark = document.documentElement.classList.toggle("dark");
+// komponen empty state
+function EmptyState() {
+    return `
+        <li class="${MESSAGE_CLASSES}">
+            Belum ada link di kategori ini
+        </li>
+    `
+}
 
-  // Simpan pilihan agar bertahan setelah reload
-  localStorage.setItem("linkpage:theme", isDark ? "dark" : "light");
+const TABS = [
+    { category: "semua", label: "Semua" },
+    { category: "sosmed", label: "Sosmed" },
+    { category: "project", label: "Project" },
+    { category: "kontak", label: "Kontak" }
+];
 
-  updateThemeButton();
-});
+// elemen filter tabs
+function FilterTabs(state) {
+    return TABS.map( function(tab) {
+        const isActive = tab.category == state.activeCategory;
 
-// INI STATE CATEGORY
-let currentCategory = "semua";
+        return `
+            <button type="button" data-action="filter" data-category="${tab.category}"
+                aria-pressed="${isActive}" class="${TAB_CLASSES}"
+            >
+                ${tab.label}
+            </button>
+        `
+    }).join("");
+}
 
-// ambil elemen counter & empty state
+// komponen link count
+function LinkCount(state) {
+    const visibleLinks = getVisibleLinks(state);
+
+    total = visibleLinks.length;
+
+    return "Menampilkan "+ total + " link";
+}
+
+
+// ====== RENDER ======
+const filterTabs = document.querySelector("#filter-tabs")
+const linkList = document.querySelector("#link-list")
 const linkCount = document.querySelector("#link-count")
-const emptyState = document.querySelector("#empty-state")
+const themeToggle = document.querySelector("#theme-toggle")
 
+function renderTheme() {
+    const isDark = state.theme == "dark";
 
-// fungsi untuk menampilkan text jml/counter link
-function updateCount() {
-    const total = linkList.children.length;
-    linkCount.textContent = "Menampilkan " + total + " link";
+    document.documentElement.classList.toggle("dark", isDark)
+
+    themeToggle.textContent = isDark ? "☀️" : "🌙";
+    themeToggle.setAttribute("aria-label", isDark ? "Ganti ke ligt mode" : "Ganti ke Dark mode")
 }
 
-// fungsi update empty state
-function updateEmptyState() {
-  if(linkList.children.length === 0) {
-      emptyState.classList.remove("hidden"); // memunculkan empty state
-  } else {
-    emptyState.classList.add("hidden"); // menyembunyikan empty state
-  }
+function render() {
+    filterTabs.innerHTML = FilterTabs(state)
+    linkList.innerHTML = LinkList(state)
+    linkCount.textContent = LinkCount(state)
+
+    renderTheme();
 }
 
-// form tambah link
-const addLinkForm = document.querySelector("#add-link-form") // ini elemen form
-const formError = document.querySelector("#form-error") // ini elemen <p> untuk menampilkan pesan error
+// EVENT HANDLER
+// Event delegation: pasang SATU listener di wadah tab (#filter-tabs).
+// Tombol di dalamnya digambar ulang terus, tetapi wadahnya tidak,
+// sehingga listener ini tetap hidup.
+
+filterTabs.addEventListener("click", function(event) {
+    const button = event.target.closest("[data-action='filter'")
+    if(button == null) {
+        return; // yang diklik bukan tombol filter
+    }
+
+    // merubah state category
+    setState({
+        activeCategory : button.dataset.category
+    })
+})
+
+themeToggle.addEventListener("click", function() {
+    const newTheme = state.theme == 'dark' ? "light" : 'dark';
+
+    localStorage.setItem("linkpage:theme", newTheme)
+
+    setState({
+        theme: newTheme
+    });
+});
+
+const addLinkForm = document.querySelector("#add-link-form");
+const formError = document.querySelector("#form-error");
 
 function showFormError(message) {
   formError.textContent = message;
@@ -148,53 +195,34 @@ function hideFormError() {
   formError.classList.add("hidden");
 }
 
-// validasi data url
 function isValidUrl(url) {
   return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("mailto:");
 }
 
-addLinkForm.addEventListener("submit", function(event) {
-  event.preventDefault(); // ini dipanggil supaya halaman tidak refresh
+addLinkForm.addEventListener("submit", function (event) {
+  event.preventDefault();
 
   const title = document.querySelector("#link-title").value.trim();
   const url = document.querySelector("#link-url").value.trim();
   const category = document.querySelector("#link-category").value;
 
-  if(title == "") {
-    showFormError("Judul tidak boleh kosong");
+  if (title === "") {
+    showFormError("Judul tidak boleh kosong.");
     return;
   }
-
-  if(!isValidUrl(url)) {
-    showFormError("URL harus diawali dengan http:// atau https:// atau mailto:")
+  if (!isValidUrl(url)) {
+    showFormError("URL harus diawali http://, https://, atau mailto:");
     return;
   }
 
   hideFormError();
-
-  // kalo di real world, simpannya ke database.
-  links.push({
-    id : Date.now(),
-    title: title,
-    url: url,
-    category: category,
-    icon: "🎶" // untuk nampilin emoji =  Windows + . (titik)
-  })
-
-
-  // reset/kosongkan form input link
   addLinkForm.reset();
 
-  // render UI
-  renderLinks(links)
-  updateCount();
-  emptyState();
-  updateThemeButton();
+  // Buat array BARU berisi semua link lama ditambah link baru.
+  // CATATAN: link yang ditambahkan hanya hidup di memori browser dan hilang saat reload.
+  const newLink = { id: Date.now(), title: title, url: url, category: category, icon: "🔗" };
+  setState({ links: [...state.links, newLink] });
 });
 
 // ===== MULAI =====
-renderLinks("semua");
-updateCount();
-emptyState();
-updateThemeButton();
-
+render();
